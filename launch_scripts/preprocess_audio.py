@@ -11,7 +11,7 @@ import soxr
 import torch
 import torchaudio
 from pedalboard import Pedalboard, PitchShift, time_stretch
-from tqdm import tqdm
+from rich.progress import track
 
 from beat_this.dataset.augment import precomputed_augmentation_filenames
 from beat_this.preprocessing import LogMelSpect, load_audio
@@ -104,7 +104,7 @@ class SpectCreation:
                             dataset_dir.name,
                         )
                     )
-            for future in tqdm(
+            for future in track(
                 concurrent.futures.as_completed(futures), total=len(futures)
             ):
                 if future.result():
@@ -226,7 +226,7 @@ class AudioPreprocessing(object):
                             self.process_audio_file, dataset_name, audio_path
                         )
                     )
-            for future in tqdm(
+            for future in track(
                 concurrent.futures.as_completed(futures), total=len(futures)
             ):
                 if future.result():
@@ -387,7 +387,7 @@ def create_npz(spect_dir, npz_file, augmentations, verbose):
             print(f"{npz_file} already exists, skipping")
         return
     with ZipFile(npz_file, "w") as z:
-        for subdir in tqdm(sorted(spect_dir.iterdir()), leave=False):
+        for subdir in track(sorted(spect_dir.iterdir()), leave=False):
             if subdir.is_dir():
                 for fn in precomputed_augmentation_filenames(augmentations):
                     z.write(subdir / fn, subdir.name + "/" + fn)
@@ -433,7 +433,7 @@ def main(orig_audio_paths, pitch_shift, time_stretch, verbose):
     # assemble into NPZ files
     print("Creating .npz spectrogram bundles...")
     spect_dirs = [child for child in sc.spectrograms_dir.iterdir() if child.is_dir()]
-    for spect_dir in tqdm(spect_dirs):
+    for spect_dir in track(spect_dirs):
         create_npz(
             spect_dir,
             spect_dir.with_suffix(".npz"),

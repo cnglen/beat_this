@@ -1,3 +1,13 @@
+# Note
+
+Forked From https://github.com/CPJKU/beat_this
+
+- use uv, rather than setup.py
+- remove tqdm use rich
+- generate srt(subtitle) file
+
+
+
 # Beat This!
 Official implementation of the beat tracker from the ISMIR 2024 paper "[Beat This! Accurate Beat Tracking Without DBN Postprocessing](https://arxiv.org/abs/2407.21658)" by Francesco Foscarin, Jan Schlüter and Gerhard Widmer.
 

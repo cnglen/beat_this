@@ -8,7 +8,7 @@ import torch.nn.functional as F
 from beat_this.model.beat_tracker import BeatThis
 from beat_this.model.postprocessor import Postprocessor
 from beat_this.preprocessing import LogMelSpect, load_audio
-from beat_this.utils import replace_state_dict_key, save_beat_tsv
+from beat_this.utils import replace_state_dict_key, save_beat_tsv, save_beat_srt
 
 CHECKPOINT_URL = "https://cloud.cp.jku.at/public.php/dav/files/7ik4RrBKTS273gp"
 
@@ -313,5 +313,8 @@ class File2Beats(Audio2Beats):
 
 class File2File(File2Beats):
     def __call__(self, audio_path, output_path):
-        downbeats, beats = super().__call__(audio_path)
-        save_beat_tsv(downbeats, beats, output_path)
+        beats, downbeats = super().__call__(audio_path)
+        print(f"downbeats={downbeats}")
+        print(f"beats={beats}")
+        save_beat_tsv(beats, downbeats, output_path)
+        save_beat_srt(beats, downbeats, output_path.with_suffix(".srt"))

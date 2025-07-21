@@ -7,10 +7,7 @@ import sys
 from pathlib import Path
 
 import torch
-try:
-    import tqdm
-except ImportError:
-    tqdm = None
+from rich.progress import track
 
 from beat_this.inference import File2File
 
@@ -138,9 +135,7 @@ def run(
             else:
                 tasks.append((item, derive_output_path(item, suffix, append, output)))
         # then process all of them
-        if tqdm is not None:
-            tasks = tqdm.tqdm(tasks)
-        for item, output in tasks:
+        for item, output in track(tasks):
             if touch_first:
                 try:
                     output.touch(exist_ok=not skip_existing)

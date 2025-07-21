@@ -1,0 +1,30 @@
+[project]
+name = "beat-this"
+version = "0.2"
+description = "Beat This! beat tracker"
+url = "https://github.com/CPJKU/beat_this"
+license="MIT"
+readme = "README.md"
+authors = [
+    { name = "cnglen", email = "cnglen@gmail.com" },
+    { name = "Francesco Foscarin"},
+    { name="Jan Schlüter"}
+]
+requires-python = ">=3.13"
+dependencies = [
+    "einops>=0.8.1",
+    "numpy>=2.3.1",
+    "rich>=14.0.0",
+    "rotary-embedding-torch>=0.8.8",
+    "soxr>=0.5.0.post1",
+    "torch>=2.7.1",
+    "torchaudio>=2.7.1",
+]
+
+
+[project.scripts]
+beat_this = "beat_this.cli:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
