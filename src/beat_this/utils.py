@@ -1,26 +1,21 @@
+from datetime import timedelta
 from itertools import chain
 from pathlib import Path
 
 import numpy as np
-from datetime import timedelta
 
-def format_seconds_to_hh_mm_ss_sss(total_seconds):
+
+def format_seconds_to_HH_MM_SS_mmm(total_seconds):
     """
-    Converts a total number of seconds (float) into hh:mm:ss,sss format.
+    Converts a total number of seconds (float) into HH:MM:SS,mms format, which is used in SRT file.
     """
     td = timedelta(seconds=total_seconds)
-    time_str = str(td)
+    mmm = int(td.microseconds / 1000)
+    MM, SS = divmod(td.seconds, 60)  # not include days
+    HH, MM = divmod(MM, 60)
+    ans = "%02d:%02d:%02d,%03d" % (HH, MM, SS, mmm)
+    return ans
 
-    parts = time_str.split('.')
-    hh_mm_ss = parts[0]
-
-    if len(parts) > 1:
-        milliseconds = parts[1][:3]
-        formatted_time = f"{hh_mm_ss},{milliseconds}"
-    else:
-        formatted_time = f"{hh_mm_ss},000"
-
-    return formatted_time
 
 def index_to_framewise(index, length):
     """Convert an index to a framewise sequence"""
@@ -97,10 +92,10 @@ def save_beat_tsv(beats: np.ndarray, downbeats: np.ndarray, outpath: str) -> Non
     except KeyboardInterrupt:
         outpath.unlink()  # avoid half-written files
 
+
 def save_beat_srt(beats: np.ndarray, downbeats: np.ndarray, outpath: str) -> None:
     """
-    Save beat information to a tab-separated file in the standard .beats format:
-    each line has a time in seconds, a tab, and a beat number (1 = downbeat).
+    Save beat information to a SRT file in the standard .srt format for visualization.
     The function requires that all downbeats are also listed as beats.
 
     Args:
@@ -150,9 +145,10 @@ def save_beat_srt(beats: np.ndarray, downbeats: np.ndarray, outpath: str) -> Non
                     next_downbeat = next(downbeats)
                 else:
                     counter += 1
-                if j+1<len(beats):
-                    f.write(f"{i}\n{format_seconds_to_hh_mm_ss_sss(beat)} --> {format_seconds_to_hh_mm_ss_sss(beats[j+1])}\n{counter}\n\n")
-                i = i+1
+                if j + 1 < len(beats):
+                    subtitle = f"{counter}: downbeat" if counter == 1 else f"{counter}"
+                    f.write(f"{i}\n{format_seconds_to_HH_MM_SS_mmm(beat)} --> {format_seconds_to_HH_MM_SS_mmm(beats[j+1])}\n{subtitle}\n\n")
+                i = i + 1
     except KeyboardInterrupt:
         outpath.unlink()  # avoid half-written files
 
