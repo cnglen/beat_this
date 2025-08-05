@@ -4,6 +4,10 @@ import torchaudio
 
 
 def load_audio(path, dtype="float64"):
+    backends = torchaudio.list_audio_backends()
+    if "ffmpeg" not in backends:
+        raise RuntimeWarning(f"ffmpeg not in torchaudio backends {backends}!!")
+
     try:
         waveform, samplerate = torchaudio.load(path, channels_first=False)
         waveform = np.asanyarray(waveform.squeeze().numpy(), dtype=dtype)
